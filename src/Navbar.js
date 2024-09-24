@@ -20,9 +20,8 @@ function Navbar() {
     };
   }, []);
 
-  let logo =
-    "https://images.ctfassets.net/y2ske730sjqp/1aONibCke6niZhgPxuiilC/2c401b05a07288746ddf3bd3943fbc76/BrandAssets_Logos_01-Wordmark.jpg?w=940";
-  let avatar = "https://commons.wikimedia.org/wiki/File:Netflix-avatar.png"
+  let logo = "https://upload.wikimedia.org/wikipedia/commons/7/7a/Logonetflix.png";
+  let avatar = "https://upload.wikimedia.org/wikipedia/commons/0/0b/Netflix-avatar.png";
 
   return (
     <div className={`nav ${show && "nav_black"}`}>
