@@ -8,25 +8,30 @@ const baseURL = "https://image.tmdb.org/t/p/original/";
 
 function Row({ title, fetchURL, isLargeRow }) {
   const [movies, setMovies] = useState([]);
-  const [{trailerURL, movie}, setTrailerURL] = useState({});
+  const [trailerURL, setTrailerURL] = useState("");
 
   const handleClick = (nextMovie) => {
-    if (movie == nextMovie) {
-      setTrailerURL({});
+    if (trailerURL && trailerURL.movieId === nextMovie.id) {
+      setTrailerURL("");
     } else {
-      movieTrailer(nextMovie?.name || "").then(url => {
-        const urlParams = new URLSearchParams(new URL(url).search);
-        const u = urlParams.get('v');
-        setTrailerURL({ u, nextMovie });
-      }).catch(error => (console.log(error)));
+      movieTrailer(nextMovie?.name || "")
+        .then(url => {
+          const urlParams = new URLSearchParams(new URL(url).search);
+          const videoId = urlParams.get('v');
+          setTrailerURL({ videoId, movieId: nextMovie.id });
+        })
+        .catch(error => {
+          console.log(error);
+        });
     }
-  }
+  };
+
   useEffect(() => {
-    async function fetchData() {
+    const fetchData = async () => {
       const request = await axios.get(fetchURL);
       setMovies(request.data.results);
       return request;
-    }
+    };
     fetchData();
   }, [fetchURL]);
 
@@ -36,7 +41,7 @@ function Row({ title, fetchURL, isLargeRow }) {
     playerVars: {
       autoplay: 1,
     }
-  }
+  };
 
   return (
     <div className="row">
@@ -45,18 +50,14 @@ function Row({ title, fetchURL, isLargeRow }) {
         {movies.map((movie) => (
           <img
             key={movie.id}
-            onClick={() => {
-              handleClick(movie)
-            }}
-            className={`row__poster ${isLargeRow && "row__posterLarge"}`}
-            src={`${baseURL}${
-              isLargeRow ? movie.poster_path : movie.backdrop_path
-            }`}
+            onClick={() => handleClick(movie)}
+            className={`row__poster ${isLargeRow ? "row__posterLarge" : ""}`}
+            src={`${baseURL}${isLargeRow ? movie.poster_path : movie.backdrop_path}`}
             alt={movie.name}
           />
         ))}
       </div>
-      {trailerURL && <Youtube videoId={trailerURL} opts={opts} />}
+      {trailerURL && <Youtube videoId={trailerURL.videoId} opts={opts} />}
     </div>
   );
 }
