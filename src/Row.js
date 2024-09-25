@@ -8,16 +8,17 @@ const baseURL = "https://image.tmdb.org/t/p/original/";
 
 function Row({ title, fetchURL, isLargeRow }) {
   const [movies, setMovies] = useState([]);
-  const [trailerURL, setTrailerURL] = useState("");
+  const [{trailerURL, movie}, setTrailerURL] = useState({});
 
-  const handleClick = (movie) => {
-    if (trailerURL) {
-      setTrailerURL('');
+  const handleClick = (nextMovie) => {
+    if (movie == nextMovie) {
+      setTrailerURL({});
     } else {
-      movieTrailer(movie?.name || "").then(url => {
+      movieTrailer(nextMovie?.name || "").then(url => {
         const urlParams = new URLSearchParams(new URL(url).search);
-        setTrailerURL(urlParams.get('v'));
-      }).catch(error => (console.error()));
+        const u = urlParams.get('v');
+        setTrailerURL({ u, nextMovie });
+      }).catch(error => (console.log(error)));
     }
   }
   useEffect(() => {
